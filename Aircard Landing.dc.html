@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  a { color: #2f6bff; text-decoration: none; }
+  a:hover { color: #1a4fd6; }
+  ::selection { background: #c9d6ff; color: #10101a; }
+  @keyframes floatToast { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  .r-hero { grid-template-columns: 1fr; }
+  .r-3 { grid-template-columns: 1fr; }
+  .r-price { grid-template-columns: 1fr; }
+  .r-cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .r-cmp { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; min-width: 620px; }
+  @media (max-width: 620px) {
+    .r-cmp-wrap { overflow-x: visible; padding: 10px !important; }
+    .r-cmp { min-width: 0; grid-template-columns: 1.4fr .85fr .85fr 1fr; }
+    .r-cmp > div { padding: 12px 6px !important; font-size: 11.5px !important; line-height: 1.3 !important; }
+    .r-cmp > div:nth-child(4n+1) { font-size: 12.5px !important; padding: 14px 6px 14px 10px !important; }
+  }
+  @media (min-width: 620px) { .r-price { grid-template-columns: repeat(2,1fr); } }
+  @media (min-width: 780px) { .r-hero { grid-template-columns: 1.12fr .88fr; } .r-3 { grid-template-columns: repeat(3,1fr); } }
+  @media (min-width: 1080px) { .r-price { grid-template-columns: repeat(5,1fr); } }
+  @media (max-width: 620px) { .r-hide-sm { display: none !important; } }
+
+  /* ============ Motion & scroll interactions ============ */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes dcRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes dcFly {
+      from { opacity: 0; transform: translate(var(--fx,0), var(--fy,0)) rotate(var(--r,0deg)) scale(.9); }
+      to   { opacity: 1; transform: translate(0,0) rotate(var(--r,0deg)) scale(1); }
+    }
+
+    /* 1 · section reveal on scroll */
+    @supports (animation-timeline: view()) {
+      .reveal { animation: dcRise both linear; animation-timeline: view(); animation-range: entry 0% entry 45%; }
+      @media (min-width: 621px) {
+        .reveal-group > * { animation: dcRise both linear; animation-timeline: view(); animation-range: entry 2% entry 42%; }
+      }
+    }
+
+    /* 2 · hero mockup fly-in (load on desktop, scroll-in on mobile) */
+    .hero-copy { animation: dcRise .8s ease both; }
+    .fly { animation: dcFly .85s cubic-bezier(.34,1.32,.5,1) both; will-change: transform, opacity; }
+    .fly-video   { --fx:-118px; --fy:14px;  --r:-8deg; animation-delay:.06s; }
+    .fly-gallery { --fx:128px;  --fy:22px;  --r:8deg;  animation-delay:.14s; }
+    .fly-link    { --fx:-104px; --fy:44px;  --r:6deg;  animation-delay:.22s; }
+    .fly-toast   { --fx:0px; --fy:-64px; --r:0deg; animation: dcFly .85s cubic-bezier(.34,1.32,.5,1) .18s both, floatToast 3.6s ease-in-out 1.1s infinite; }
+
+    /* 3 · mobile card stacking (desktop keeps the grid) */
+    @media (max-width: 620px) {
+      .stack { display: block !important; }
+      .stack > * { position: sticky !important; top: 60px; margin-bottom: 14px; transform-origin: 50% 0; }
+      .stack > *:nth-child(2) { top: 70px; }
+      .stack > *:nth-child(3) { top: 80px; }
+      .stack > *:nth-child(4) { top: 90px; }
+      .stack > *:nth-child(5) { top: 100px; }
+    }
+  }
+
+  /* Hero mockup: fixed design canvas, scaled to fit so nothing clips on narrow screens */
+  .mock-scaler { position: absolute; inset: 0; }
+  .mock-canvas { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  @media (max-width: 620px) {
+    .hero-panel { min-height: 0 !important; padding: 14px !important; }
+    .mock-scaler {
+      position: relative; inset: auto;
+      display: flex; justify-content: center; align-items: flex-start;
+      overflow: hidden; width: 100%;
+      height: 480px; /* fallback; refined by script to 600 * scale */
+    }
+    .mock-canvas {
+      position: relative; inset: auto; flex: none;
+      width: 500px; height: 600px;
+      transform-origin: top center;
+      transform: scale(0.8); /* fallback; refined by script to fit panel width */
+    }
+  }
+</style>
+<script src="./image-slot.js"></script>
+</helmet>
+
+<div style="background:#08080a;font-family:'Archivo',system-ui,sans-serif;color:#e9e9ef;min-height:100vh;padding:clamp(12px,3vw,20px);">
+<div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:20px;">
+
+  <!-- NAV -->
+  <nav style="display:flex;align-items:center;justify-content:space-between;padding:6px 6px 2px;">
+    <div style="display:flex;align-items:center;">
+      <img src="assets/logo-white.svg" alt="Connectia" style="height:22px;width:auto;display:block;">
+    </div>
+    <div style="display:flex;align-items:center;gap:24px;">
+      <a href="#how" class="r-hide-sm" style="color:#a8a8b4;font-size:15px;font-weight:500;">How it works</a>
+      <a href="#pricing" class="r-hide-sm" style="color:#a8a8b4;font-size:15px;font-weight:500;">Pricing</a>
+      <a href="#" style="background:#fff;color:#10101a;padding:11px 20px;border-radius:12px;font-weight:600;font-size:15px;">Create your free card</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="r-hero" style="display:grid;gap:20px;">
+    <div style="border-radius:28px;padding:44px;background:linear-gradient(140deg,#eae7ff 0%,#dfeaff 52%,#eaf5ff 100%);color:#141420;display:flex;flex-direction:column;justify-content:space-between;min-height:520px;">
+      <div class="hero-copy">
+        <div style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.02em;color:#5b5b74;background:rgba(255,255,255,.55);padding:7px 13px;border-radius:999px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#2f6bff;"></span>
+          The AI-powered digital business card
+        </div>
+        <h1 style="font-size:clamp(34px,8vw,60px);line-height:1;font-weight:800;letter-spacing:-.03em;margin:26px 0 0;max-width:12ch;">The business card that answers back.</h1>
+        <p style="font-size:19px;line-height:1.5;color:#43435a;max-width:40ch;margin:22px 0 0;font-weight:400;">They scan. They ask. You get the lead. Your card answers questions about you 24/7 — no app, no hardware, no missed follow-ups.</p>
+      </div>
+      <div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;">
+          <a href="#" style="background:#141420;color:#fff;padding:15px 24px;border-radius:14px;font-weight:600;font-size:16px;display:inline-flex;align-items:center;gap:9px;">Create your free card
+            <span style="width:22px;height:22px;border-radius:50%;background:#fff;color:#141420;display:inline-flex;align-items:center;justify-content:center;font-size:13px;">→</span>
+          </a>
+          
+        </div>
+        <p style="font-size:13.5px;color:#6a6a82;margin:18px 0 0;font-weight:500;">Free forever · Nothing for them to install · Ready in 2 minutes</p>
+      </div>
+    </div>
+
+    <!-- device mock -->
+    <div class="hero-panel" style="border-radius:28px;padding:34px;background:#0f0f14;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:600px;">
+     <div class="mock-scaler"><div class="mock-canvas">
+      <div style="position:absolute;inset:0;background:radial-gradient(120% 80% at 70% 0%,rgba(120,150,255,.22),transparent 60%);"><div class="fly fly-toast" style="position: absolute; top: 82px; z-index: 3; background: #fff; color: #141420; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 11px; box-shadow: 0 18px 40px rgba(0,0,0,.4); max-width: 230px; left: 302px">
+        <span style="width:34px;height:34px;border-radius:10px;background:linear-gradient(140deg,#d9ffe6,#c9f0d3);display:inline-flex;align-items:center;justify-content:center;font-size:16px;">✦</span>
+        <span style="font-size:12.5px;line-height:1.25;"><b style="font-weight:700;">New lead</b><br><span style="color:#5b5b6e;">Asked about pricing</span></span>
+      </div><div class="fly fly-gallery" style="position: absolute; top: 304px; width: 154px; transform: rotate(8deg); z-index: 2; background: #fff; border-radius: 15px; padding: 11px; box-shadow: 0 18px 40px rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.1); left: 355px; font-family: Archivo, system-ui, sans-serif">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c13584" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="#c13584" stroke="none"></circle></svg>
+            <span style="font-size:12px;font-weight:800;color:#141420;">Gallery</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+            <div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
+              <image-slot id="mock-g1" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(6).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+            </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
+              <image-slot id="mock-g2" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_52%20(8).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+            </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
+              <image-slot id="mock-g3" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_50%20(5).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+            </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
+              <image-slot id="mock-g4" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(7).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+            </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
+              <image-slot id="mock-g5" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_53_17%20(2)-1b1f26bc.png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+            </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
+              <image-slot id="mock-g6" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_53_17%20(2)-1b1f26bc.png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+            </div>
+          </div>
+        </div></div>
+      <sc-if value="{{ leadToastOn }}" hint-placeholder-val="{{ true }}">
+      
+      </sc-if>
+
+      
+    <div style="position:relative;z-index:2;width:100%;max-width:400px;height:560px;margin:0 auto;">
+
+        <!-- floating: videos (left) -->
+        <div class="fly fly-video" style="position: absolute; left: 0px; top: 30px; width: 150px; transform: rotate(-8deg); z-index: 2; background: #fff; border-radius: 15px; padding: 11px; box-shadow: 0 18px 40px rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.1)">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:9px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff3b30"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z" fill="#fff"></path></svg>
+            <span style="font-size:12px;font-weight:800;color:#141420;">Videos</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div>
+              <div style="position:relative;width:100%;height:70px;border-radius:9px;overflow:hidden;background:#e9eaf1;">
+                <image-slot id="mock-vid1" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(6).png" shape="rect" fit="cover" placeholder="Video" style="width:100%;height:100%;"></image-slot>
+                <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;padding-left:2px;pointer-events:none;">▶</span>
+              </div>
+              <div style="font-size:9.5px;font-weight:600;color:#43435a;margin-top:5px;line-height:1.25;">How I close enterprise deals</div>
+            </div>
+            <div>
+              <div style="position:relative;width:100%;height:70px;border-radius:9px;overflow:hidden;background:#e9eaf1;">
+                <image-slot id="mock-vid2" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_52%20(8).png" shape="rect" fit="cover" placeholder="Video" style="width:100%;height:100%;"></image-slot>
+                <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;padding-left:2px;pointer-events:none;">▶</span>
+              </div>
+              <div style="font-size:9.5px;font-weight:600;color:#43435a;margin-top:5px;line-height:1.25;">Studio walk-through tour</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- floating: links (bottom-left) -->
+        <div class="fly fly-link" style="position: absolute; left: 2px; width: 150px; transform: rotate(6deg); z-index: 2; background: #fff; border-radius: 15px; padding: 12px; box-shadow: 0 18px 40px rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.1); top: 413px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2f6bff" stroke-width="2" stroke-linecap="round"><path d="M10 13a4 4 0 0 0 6 .5l3-3a4 4 0 0 0-6-6l-1.5 1.5"></path><path d="M14 11a4 4 0 0 0-6-.5l-3 3a4 4 0 0 0 6 6L12 18"></path></svg>
+            <span style="font-size:12px;font-weight:800;color:#141420;">Links</span>
+          </div>
+          <a href="#" style="display:flex;align-items:center;gap:8px;background:#f4f5f9;border-radius:9px;padding:8px 9px;margin-top:6px;text-decoration:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b5b6e" stroke-width="1.9"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"></path></svg><span style="font-size:11px;font-weight:600;color:#2a2a38;flex:1;">Visit website</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b0b0bc" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+            </a>
+          <a href="#" style="display:flex;align-items:center;gap:8px;background:#f4f5f9;border-radius:9px;padding:8px 9px;margin-top:6px;text-decoration:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b5b6e" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"></rect><path d="M3 9h18M8 2.5v4M16 2.5v4"></path></svg><span style="font-size:11px;font-weight:600;color:#2a2a38;flex:1;">Book a call</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b0b0bc" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+            </a>
+        </div>
+
+        <!-- floating: gallery (right) -->
+        
+
+        <!-- MAIN card + chat (center, front) -->
+        <div style="position: absolute; left: 198px; top: 95px; transform: translateX(-50%); width: 236px; z-index: 3; border-radius: 28px; background: #f4f4f7; padding: 12px; box-shadow: 0 34px 70px rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.12)">
+          <!-- profile -->
+          <div style="border-radius:20px;background:#fff;overflow:hidden;">
+            <div style="position:relative;height:64px;background:linear-gradient(140deg,#c3b8ff,#9db6ff);">
+              <image-slot id="mock-cover" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(7).png" shape="rect" fit="cover" placeholder="Cover photo" style="width:100%;height:100%;"></image-slot>
+            </div>
+            <div style="padding:0 15px 15px;">
+              
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+                <div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #fff;margin-top:-27px;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.15);background:#e9eaf1;">
+                  <image-slot id="mock-avatar" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_50%20(5).png" shape="circle" fit="cover" placeholder="Photo" style="width:100%;height:100%;"></image-slot>
+                </div>
+                <div style="display:flex;gap:5px;margin-bottom:2px;">
+                  <span style="font-size:10px;font-weight:600;color:#3f3f52;background:#eef0f5;padding:6px 9px;border-radius:999px;">Save</span>
+                  <span style="font-size:10px;font-weight:600;color:#fff;background:#141420;padding:6px 9px;border-radius:999px;">Share</span>
+                </div>
+              </div><div style="font-weight:800;font-size:16px;margin-top:8px;color:#141420;letter-spacing:-.01em;">Jordan Diaz</div>
+              <div style="font-size:11px;color:#7c7c8a;margin-top:1px;">Sales Lead · Northwind Studio</div>
+            </div>
+          </div>
+          <!-- chat sheet -->
+          <div style="margin-top:10px;border-radius:18px;background:#fff;padding:13px;">
+            <div style="display:flex;justify-content:flex-end;">
+              <div style="background:#2f6bff;color:#fff;padding:8px 12px;border-radius:14px 14px 4px 14px;font-size:12px;font-weight:500;max-width:82%;">What's your rate?</div>
+            </div>
+            <div style="display:flex;gap:7px;margin-top:10px;align-items:flex-end;">
+              <span style="width:20px;height:20px;border-radius:6px;background:linear-gradient(140deg,#c3b8ff,#9db6ff);flex:none;"></span>
+              <div style="background:#f1f1f5;color:#22222e;padding:9px 12px;border-radius:14px 14px 14px 4px;font-size:12px;line-height:1.4;max-width:82%;">Projects start at $8k. Want me to send a scope for yours?</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:11px;background:#f4f4f7;border-radius:11px;padding:8px 11px;">
+              <span style="color:#9a9aa8;font-size:12px;flex:1;">Ask anything…</span>
+              <span style="width:20px;height:20px;border-radius:50%;background:#2f6bff;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">↑</span>
+            </div>
+          </div>
+        </div>
+
+      </div></div></div></div>
+  </section>
+
+  <!-- SECTION 2 — 11 PM SCAN -->
+  <section style="margin-top:26px;">
+    <div class="reveal" style="text-align:center;max-width:44ch;margin:0 auto 28px;">
+      <span style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#7d7d8e;">The 11 PM scan</span>
+      <h2 style="font-size:clamp(28px,5vw,44px);line-height:1.05;font-weight:800;letter-spacing:-.03em;color:#fff;margin:12px 0 0;">The event ended hours ago.<br>Your card is still working.</h2>
+    </div>
+    <div class="r-3 stack reveal-group" style="display:grid;gap:20px;">
+      <!-- beat 1 -->
+      <div style="border-radius:24px;background:linear-gradient(140deg,#fdecef,#fff6f0);padding:26px;color:#141420;min-height:320px;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;background:rgba(20,20,32,.07);padding:6px 12px;border-radius:999px;">6:12 PM</span>
+          <span style="font-size:12px;color:#8a7a7e;font-weight:600;">The handshake</span>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:18px 0;">
+          <div style="width:150px;border-radius:16px;background:#fff;padding:14px;box-shadow:0 12px 30px rgba(0,0,0,.08);text-align:center;">
+            <div style="width:64px;height:64px;border-radius:12px;background:#fff;border:1px solid rgba(20,20,32,.1);padding:6px;margin:0 auto;"><svg viewBox="-1 -1 23 23" width="100%" height="100%" shape-rendering="crispEdges" style="display:block;"><rect x="-1" y="-1" width="23" height="23" fill="#fff"></rect><g fill="#141420"><rect x="0" y="0" width="1" height="1"></rect><rect x="1" y="0" width="1" height="1"></rect><rect x="2" y="0" width="1" height="1"></rect><rect x="3" y="0" width="1" height="1"></rect><rect x="4" y="0" width="1" height="1"></rect><rect x="5" y="0" width="1" height="1"></rect><rect x="6" y="0" width="1" height="1"></rect><rect x="8" y="0" width="1" height="1"></rect><rect x="9" y="0" width="1" height="1"></rect><rect x="10" y="0" width="1" height="1"></rect><rect x="12" y="0" width="1" height="1"></rect><rect x="14" y="0" width="1" height="1"></rect><rect x="15" y="0" width="1" height="1"></rect><rect x="16" y="0" width="1" height="1"></rect><rect x="17" y="0" width="1" height="1"></rect><rect x="18" y="0" width="1" height="1"></rect><rect x="19" y="0" width="1" height="1"></rect><rect x="20" y="0" width="1" height="1"></rect><rect x="0" y="1" width="1" height="1"></rect><rect x="6" y="1" width="1" height="1"></rect><rect x="8" y="1" width="1" height="1"></rect><rect x="10" y="1" width="1" height="1"></rect><rect x="14" y="1" width="1" height="1"></rect><rect x="20" y="1" width="1" height="1"></rect><rect x="0" y="2" width="1" height="1"></rect><rect x="2" y="2" width="1" height="1"></rect><rect x="3" y="2" width="1" height="1"></rect><rect x="4" y="2" width="1" height="1"></rect><rect x="6" y="2" width="1" height="1"></rect><rect x="10" y="2" width="1" height="1"></rect><rect x="14" y="2" width="1" height="1"></rect><rect x="16" y="2" width="1" height="1"></rect><rect x="17" y="2" width="1" height="1"></rect><rect x="18" y="2" width="1" height="1"></rect><rect x="20" y="2" width="1" height="1"></rect><rect x="0" y="3" width="1" height="1"></rect><rect x="2" y="3" width="1" height="1"></rect><rect x="3" y="3" width="1" height="1"></rect><rect x="4" y="3" width="1" height="1"></rect><rect x="6" y="3" width="1" height="1"></rect><rect x="8" y="3" width="1" height="1"></rect><rect x="14" y="3" width="1" height="1"></rect><rect x="16" y="3" width="1" height="1"></rect><rect x="17" y="3" width="1" height="1"></rect><rect x="18" y="3" width="1" height="1"></rect><rect x="20" y="3" width="1" height="1"></rect><rect x="0" y="4" width="1" height="1"></rect><rect x="2" y="4" width="1" height="1"></rect><rect x="3" y="4" width="1" height="1"></rect><rect x="4" y="4" width="1" height="1"></rect><rect x="6" y="4" width="1" height="1"></rect><rect x="9" y="4" width="1" height="1"></rect><rect x="10" y="4" width="1" height="1"></rect><rect x="12" y="4" width="1" height="1"></rect><rect x="14" y="4" width="1" height="1"></rect><rect x="16" y="4" width="1" height="1"></rect><rect x="17" y="4" width="1" height="1"></rect><rect x="18" y="4" width="1" height="1"></rect><rect x="20" y="4" width="1" height="1"></rect><rect x="0" y="5" width="1" height="1"></rect><rect x="6" y="5" width="1" height="1"></rect><rect x="9" y="5" width="1" height="1"></rect><rect x="10" y="5" width="1" height="1"></rect><rect x="11" y="5" width="1" height="1"></rect><rect x="12" y="5" width="1" height="1"></rect><rect x="14" y="5" width="1" height="1"></rect><rect x="20" y="5" width="1" height="1"></rect><rect x="0" y="6" width="1" height="1"></rect><rect x="1" y="6" width="1" height="1"></rect><rect x="2" y="6" width="1" height="1"></rect><rect x="3" y="6" width="1" height="1"></rect><rect x="4" y="6" width="1" height="1"></rect><rect x="5" y="6" width="1" height="1"></rect><rect x="6" y="6" width="1" height="1"></rect><rect x="8" y="6" width="1" height="1"></rect><rect x="10" y="6" width="1" height="1"></rect><rect x="12" y="6" width="1" height="1"></rect><rect x="14" y="6" width="1" height="1"></rect><rect x="15" y="6" width="1" height="1"></rect><rect x="16" y="6" width="1" height="1"></rect><rect x="17" y="6" width="1" height="1"></rect><rect x="18" y="6" width="1" height="1"></rect><rect x="19" y="6" width="1" height="1"></rect><rect x="20" y="6" width="1" height="1"></rect><rect x="9" y="7" width="1" height="1"></rect><rect x="10" y="7" width="1" height="1"></rect><rect x="0" y="8" width="1" height="1"></rect><rect x="3" y="8" width="1" height="1"></rect><rect x="5" y="8" width="1" height="1"></rect><rect x="6" y="8" width="1" height="1"></rect><rect x="9" y="8" width="1" height="1"></rect><rect x="11" y="8" width="1" height="1"></rect><rect x="15" y="8" width="1" height="1"></rect><rect x="17" y="8" width="1" height="1"></rect><rect x="18" y="8" width="1" height="1"></rect><rect x="19" y="8" width="1" height="1"></rect><rect x="20" y="8" width="1" height="1"></rect><rect x="0" y="9" width="1" height="1"></rect><rect x="2" y="9" width="1" height="1"></rect><rect x="7" y="9" width="1" height="1"></rect><rect x="9" y="9" width="1" height="1"></rect><rect x="11" y="9" width="1" height="1"></rect><rect x="12" y="9" width="1" height="1"></rect><rect x="13" y="9" width="1" height="1"></rect><rect x="14" y="9" width="1" height="1"></rect><rect x="16" y="9" width="1" height="1"></rect><rect x="17" y="9" width="1" height="1"></rect><rect x="19" y="9" width="1" height="1"></rect><rect x="20" y="9" width="1" height="1"></rect><rect x="3" y="10" width="1" height="1"></rect><rect x="5" y="10" width="1" height="1"></rect><rect x="6" y="10" width="1" height="1"></rect><rect x="7" y="10" width="1" height="1"></rect><rect x="8" y="10" width="1" height="1"></rect><rect x="9" y="10" width="1" height="1"></rect><rect x="10" y="10" width="1" height="1"></rect><rect x="11" y="10" width="1" height="1"></rect><rect x="13" y="10" width="1" height="1"></rect><rect x="15" y="10" width="1" height="1"></rect><rect x="17" y="10" width="1" height="1"></rect><rect x="18" y="10" width="1" height="1"></rect><rect x="2" y="11" width="1" height="1"></rect><rect x="3" y="11" width="1" height="1"></rect><rect x="4" y="11" width="1" height="1"></rect><rect x="5" y="11" width="1" height="1"></rect><rect x="10" y="11" width="1" height="1"></rect><rect x="11" y="11" width="1" height="1"></rect><rect x="12" y="11" width="1" height="1"></rect><rect x="13" y="11" width="1" height="1"></rect><rect x="18" y="11" width="1" height="1"></rect><rect x="1" y="12" width="1" height="1"></rect><rect x="2" y="12" width="1" height="1"></rect><rect x="4" y="12" width="1" height="1"></rect><rect x="5" y="12" width="1" height="1"></rect><rect x="6" y="12" width="1" height="1"></rect><rect x="7" y="12" width="1" height="1"></rect><rect x="8" y="12" width="1" height="1"></rect><rect x="9" y="12" width="1" height="1"></rect><rect x="15" y="12" width="1" height="1"></rect><rect x="17" y="12" width="1" height="1"></rect><rect x="8" y="13" width="1" height="1"></rect><rect x="9" y="13" width="1" height="1"></rect><rect x="10" y="13" width="1" height="1"></rect><rect x="11" y="13" width="1" height="1"></rect><rect x="12" y="13" width="1" height="1"></rect><rect x="14" y="13" width="1" height="1"></rect><rect x="16" y="13" width="1" height="1"></rect><rect x="20" y="13" width="1" height="1"></rect><rect x="0" y="14" width="1" height="1"></rect><rect x="1" y="14" width="1" height="1"></rect><rect x="2" y="14" width="1" height="1"></rect><rect x="3" y="14" width="1" height="1"></rect><rect x="4" y="14" width="1" height="1"></rect><rect x="5" y="14" width="1" height="1"></rect><rect x="6" y="14" width="1" height="1"></rect><rect x="10" y="14" width="1" height="1"></rect><rect x="11" y="14" width="1" height="1"></rect><rect x="13" y="14" width="1" height="1"></rect><rect x="14" y="14" width="1" height="1"></rect><rect x="15" y="14" width="1" height="1"></rect><rect x="16" y="14" width="1" height="1"></rect><rect x="17" y="14" width="1" height="1"></rect><rect x="19" y="14" width="1" height="1"></rect><rect x="20" y="14" width="1" height="1"></rect><rect x="0" y="15" width="1" height="1"></rect><rect x="6" y="15" width="1" height="1"></rect><rect x="9" y="15" width="1" height="1"></rect><rect x="12" y="15" width="1" height="1"></rect><rect x="15" y="15" width="1" height="1"></rect><rect x="16" y="15" width="1" height="1"></rect><rect x="17" y="15" width="1" height="1"></rect><rect x="18" y="15" width="1" height="1"></rect><rect x="19" y="15" width="1" height="1"></rect><rect x="0" y="16" width="1" height="1"></rect><rect x="2" y="16" width="1" height="1"></rect><rect x="3" y="16" width="1" height="1"></rect><rect x="4" y="16" width="1" height="1"></rect><rect x="6" y="16" width="1" height="1"></rect><rect x="8" y="16" width="1" height="1"></rect><rect x="9" y="16" width="1" height="1"></rect><rect x="13" y="16" width="1" height="1"></rect><rect x="15" y="16" width="1" height="1"></rect><rect x="19" y="16" width="1" height="1"></rect><rect x="20" y="16" width="1" height="1"></rect><rect x="0" y="17" width="1" height="1"></rect><rect x="2" y="17" width="1" height="1"></rect><rect x="3" y="17" width="1" height="1"></rect><rect x="4" y="17" width="1" height="1"></rect><rect x="6" y="17" width="1" height="1"></rect><rect x="8" y="17" width="1" height="1"></rect><rect x="10" y="17" width="1" height="1"></rect><rect x="12" y="17" width="1" height="1"></rect><rect x="13" y="17" width="1" height="1"></rect><rect x="14" y="17" width="1" height="1"></rect><rect x="15" y="17" width="1" height="1"></rect><rect x="16" y="17" width="1" height="1"></rect><rect x="18" y="17" width="1" height="1"></rect><rect x="0" y="18" width="1" height="1"></rect><rect x="2" y="18" width="1" height="1"></rect><rect x="3" y="18" width="1" height="1"></rect><rect x="4" y="18" width="1" height="1"></rect><rect x="6" y="18" width="1" height="1"></rect><rect x="10" y="18" width="1" height="1"></rect><rect x="16" y="18" width="1" height="1"></rect><rect x="17" y="18" width="1" height="1"></rect><rect x="18" y="18" width="1" height="1"></rect><rect x="19" y="18" width="1" height="1"></rect><rect x="0" y="19" width="1" height="1"></rect><rect x="6" y="19" width="1" height="1"></rect><rect x="8" y="19" width="1" height="1"></rect><rect x="12" y="19" width="1" height="1"></rect><rect x="16" y="19" width="1" height="1"></rect><rect x="18" y="19" width="1" height="1"></rect><rect x="0" y="20" width="1" height="1"></rect><rect x="1" y="20" width="1" height="1"></rect><rect x="2" y="20" width="1" height="1"></rect><rect x="3" y="20" width="1" height="1"></rect><rect x="4" y="20" width="1" height="1"></rect><rect x="5" y="20" width="1" height="1"></rect><rect x="6" y="20" width="1" height="1"></rect><rect x="8" y="20" width="1" height="1"></rect><rect x="13" y="20" width="1" height="1"></rect><rect x="14" y="20" width="1" height="1"></rect><rect x="18" y="20" width="1" height="1"></rect></g></svg></div>
+            <div style="font-size:12px;color:#6a6a7a;margin-top:10px;font-weight:600;">One scan → saved</div>
+          </div>
+        </div>
+        <p style="font-size:15px;line-height:1.45;color:#43435a;margin:0;">You meet Alex at a networking event. One scan, your card's in their phone.</p>
+      </div>
+      <!-- beat 2 -->
+      <div style="border-radius:24px;background:linear-gradient(140deg,#e7efff,#efeaff);padding:26px;color:#141420;min-height:320px;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;background:rgba(20,20,32,.07);padding:6px 12px;border-radius:999px;">11:47 PM</span>
+          <span style="font-size:12px;color:#6f7488;font-weight:600;">The question</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;margin:18px 0;">
+          <div style="align-self:flex-end;background:#2f6bff;color:#fff;padding:9px 13px;border-radius:15px 15px 4px 15px;font-size:13px;max-width:88%;">Do they handle enterprise contracts?</div>
+          <div style="align-self:flex-start;background:#fff;color:#22222e;padding:9px 13px;border-radius:15px 15px 15px 4px;font-size:13px;max-width:88%;box-shadow:0 8px 22px rgba(0,0,0,.06);">Yes — we run enterprise SLAs and custom terms. Want details?</div>
+        </div>
+        <p style="font-size:15px;line-height:1.45;color:#43435a;margin:0;">Alex wonders, opens your card, and asks. Your AI answers — instantly, accurately.</p>
+      </div>
+      <!-- beat 3 -->
+      <div style="border-radius:24px;background:linear-gradient(140deg,#eef8ee,#f7fbef);padding:26px;color:#141420;min-height:320px;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;background:rgba(20,20,32,.07);padding:6px 12px;border-radius:999px;">8:00 AM</span>
+          <span style="font-size:12px;color:#6f887a;font-weight:600;">The lead</span>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:18px 0;">
+          <div style="width:100%;border-radius:16px;background:#fff;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,.08);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="width:36px;height:36px;border-radius:10px;background:linear-gradient(140deg,#d9ffe6,#c9f0d3);display:flex;align-items:center;justify-content:center;">✦</span>
+              <div><div style="font-weight:800;font-size:14px;">Alex Kim</div><div style="font-size:11.5px;color:#6a6a7a;">alex@company.com</div></div>
+            </div>
+            <div style="margin-top:11px;font-size:12px;color:#43435a;line-height:1.4;"><b>Interested in</b> enterprise plan<br><b>Asked about</b> pricing</div>
+          </div>
+        </div>
+        <p style="font-size:15px;line-height:1.45;color:#43435a;margin:0;">You wake up to a qualified lead — name, contact, and exactly what they wanted.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:28px;">
+      <p style="font-size:20px;font-weight:600;color:#d8d8e2;max-width:52ch;margin:0 auto 20px;line-height:1.45;">A paper card gets tossed. A digital card gets forgotten. Yours starts conversations — and finishes them.</p>
+      <a href="#" style="background:#fff;color:#10101a;padding:14px 24px;border-radius:14px;font-weight:600;font-size:16px;display:inline-flex;align-items:center;gap:9px;">Make your card work nights →</a>
+    </div>
+  </section>
+
+  <!-- SECTION 3 — HOW IT WORKS -->
+  <section id="how" style="margin-top:34px;">
+    <div class="reveal" style="text-align:center;max-width:40ch;margin:0 auto 28px;">
+      <span style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#7d7d8e;">How it works</span>
+      <h2 style="font-size:clamp(28px,5vw,44px);line-height:1.05;font-weight:800;letter-spacing:-.03em;color:#fff;margin:12px 0 0;">From paper to talking card in 3 steps.</h2>
+    </div>
+    <div class="r-3 stack reveal-group" style="display:grid;gap:20px;">
+      <div style="border-radius:24px;background:linear-gradient(140deg,#e9e6ff,#dfeaff);padding:28px;color:#141420;">
+        <span style="font-size:13px;font-weight:800;color:#2f6bff;">STEP 1</span>
+        <h3 style="font-size:23px;font-weight:800;letter-spacing:-.02em;margin:8px 0 10px;">Feed it one thing</h3>
+        <p style="font-size:15px;line-height:1.5;color:#43435a;margin:0 0 20px;">Upload your intro deck or paste your website URL. That's it — your AI is trained.</p>
+        <div style="border:2px dashed rgba(47,107,255,.4);border-radius:16px;background:rgba(255,255,255,.55);padding:22px;text-align:center;">
+          <div style="font-size:26px;">⤒</div>
+          <div style="font-size:13.5px;font-weight:600;margin-top:6px;">Drop deck or paste URL</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <span style="font-size:11.5px;color:#6a6a82;font-weight:600;">Optional:</span>
+          <span style="font-size:11.5px;background:rgba(255,255,255,.6);padding:3px 9px;border-radius:999px;font-weight:600;">LinkedIn</span>
+          <span style="font-size:11.5px;background:rgba(255,255,255,.6);padding:3px 9px;border-radius:999px;font-weight:600;">Instagram</span>
+          <span style="font-size:11.5px;background:rgba(255,255,255,.6);padding:3px 9px;border-radius:999px;font-weight:600;">YouTube</span>
+        </div>
+      </div>
+      <div style="border-radius:24px;background:linear-gradient(140deg,#fdecef,#fff6f0);padding:28px;color:#141420;">
+        <span style="font-size:13px;font-weight:800;color:#e0567a;">STEP 2</span>
+        <h3 style="font-size:23px;font-weight:800;letter-spacing:-.02em;margin:8px 0 10px;">Design your card</h3>
+        <p style="font-size:15px;line-height:1.5;color:#43435a;margin:0 0 20px;">Photo, links, videos, services. Whatever you put on your card, your AI learns automatically.</p>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="flex:1;background:rgba(255,255,255,.6);border-radius:14px;padding:14px;font-size:13px;font-weight:600;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="width:16px;height:16px;background:#141420;border-radius:5px;"></span> Photo</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="width:16px;height:16px;background:#141420;border-radius:5px;"></span> Services</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:16px;height:16px;background:#141420;border-radius:5px;"></span> Video</div>
+          </div>
+          <div style="color:#e0567a;font-size:22px;">→</div>
+          <div style="flex:1;background:#141420;color:#fff;border-radius:14px;padding:14px;font-size:12px;font-weight:600;">
+            <div style="opacity:.6;font-size:10.5px;margin-bottom:6px;">AI KNOWLEDGE</div>
+            <div style="animation:blink 2.4s infinite;">● Learning card…</div>
+          </div>
+        </div>
+      </div>
+      <div style="border-radius:24px;background:linear-gradient(140deg,#eef8ee,#f7fbef);padding:28px;color:#141420;">
+        <span style="font-size:13px;font-weight:800;color:#2f9e6a;">STEP 3</span>
+        <h3 style="font-size:23px;font-weight:800;letter-spacing:-.02em;margin:8px 0 10px;">Share it anywhere</h3>
+        <p style="font-size:15px;line-height:1.5;color:#43435a;margin:0 0 20px;">QR on your phone, link in your signature. They scan, they ask, you collect.</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:72px;height:72px;border-radius:12px;background:#fff;border:1px solid rgba(20,20,32,.1);padding:7px;flex:none;"><svg viewBox="-1 -1 23 23" width="100%" height="100%" shape-rendering="crispEdges" style="display:block;"><rect x="-1" y="-1" width="23" height="23" fill="#fff"></rect><g fill="#141420"><rect x="0" y="0" width="1" height="1"></rect><rect x="1" y="0" width="1" height="1"></rect><rect x="2" y="0" width="1" height="1"></rect><rect x="3" y="0" width="1" height="1"></rect><rect x="4" y="0" width="1" height="1"></rect><rect x="5" y="0" width="1" height="1"></rect><rect x="6" y="0" width="1" height="1"></rect><rect x="8" y="0" width="1" height="1"></rect><rect x="9" y="0" width="1" height="1"></rect><rect x="10" y="0" width="1" height="1"></rect><rect x="12" y="0" width="1" height="1"></rect><rect x="14" y="0" width="1" height="1"></rect><rect x="15" y="0" width="1" height="1"></rect><rect x="16" y="0" width="1" height="1"></rect><rect x="17" y="0" width="1" height="1"></rect><rect x="18" y="0" width="1" height="1"></rect><rect x="19" y="0" width="1" height="1"></rect><rect x="20" y="0" width="1" height="1"></rect><rect x="0" y="1" width="1" height="1"></rect><rect x="6" y="1" width="1" height="1"></rect><rect x="8" y="1" width="1" height="1"></rect><rect x="10" y="1" width="1" height="1"></rect><rect x="14" y="1" width="1" height="1"></rect><rect x="20" y="1" width="1" height="1"></rect><rect x="0" y="2" width="1" height="1"></rect><rect x="2" y="2" width="1" height="1"></rect><rect x="3" y="2" width="1" height="1"></rect><rect x="4" y="2" width="1" height="1"></rect><rect x="6" y="2" width="1" height="1"></rect><rect x="10" y="2" width="1" height="1"></rect><rect x="14" y="2" width="1" height="1"></rect><rect x="16" y="2" width="1" height="1"></rect><rect x="17" y="2" width="1" height="1"></rect><rect x="18" y="2" width="1" height="1"></rect><rect x="20" y="2" width="1" height="1"></rect><rect x="0" y="3" width="1" height="1"></rect><rect x="2" y="3" width="1" height="1"></rect><rect x="3" y="3" width="1" height="1"></rect><rect x="4" y="3" width="1" height="1"></rect><rect x="6" y="3" width="1" height="1"></rect><rect x="8" y="3" width="1" height="1"></rect><rect x="14" y="3" width="1" height="1"></rect><rect x="16" y="3" width="1" height="1"></rect><rect x="17" y="3" width="1" height="1"></rect><rect x="18" y="3" width="1" height="1"></rect><rect x="20" y="3" width="1" height="1"></rect><rect x="0" y="4" width="1" height="1"></rect><rect x="2" y="4" width="1" height="1"></rect><rect x="3" y="4" width="1" height="1"></rect><rect x="4" y="4" width="1" height="1"></rect><rect x="6" y="4" width="1" height="1"></rect><rect x="9" y="4" width="1" height="1"></rect><rect x="10" y="4" width="1" height="1"></rect><rect x="12" y="4" width="1" height="1"></rect><rect x="14" y="4" width="1" height="1"></rect><rect x="16" y="4" width="1" height="1"></rect><rect x="17" y="4" width="1" height="1"></rect><rect x="18" y="4" width="1" height="1"></rect><rect x="20" y="4" width="1" height="1"></rect><rect x="0" y="5" width="1" height="1"></rect><rect x="6" y="5" width="1" height="1"></rect><rect x="9" y="5" width="1" height="1"></rect><rect x="10" y="5" width="1" height="1"></rect><rect x="11" y="5" width="1" height="1"></rect><rect x="12" y="5" width="1" height="1"></rect><rect x="14" y="5" width="1" height="1"></rect><rect x="20" y="5" width="1" height="1"></rect><rect x="0" y="6" width="1" height="1"></rect><rect x="1" y="6" width="1" height="1"></rect><rect x="2" y="6" width="1" height="1"></rect><rect x="3" y="6" width="1" height="1"></rect><rect x="4" y="6" width="1" height="1"></rect><rect x="5" y="6" width="1" height="1"></rect><rect x="6" y="6" width="1" height="1"></rect><rect x="8" y="6" width="1" height="1"></rect><rect x="10" y="6" width="1" height="1"></rect><rect x="12" y="6" width="1" height="1"></rect><rect x="14" y="6" width="1" height="1"></rect><rect x="15" y="6" width="1" height="1"></rect><rect x="16" y="6" width="1" height="1"></rect><rect x="17" y="6" width="1" height="1"></rect><rect x="18" y="6" width="1" height="1"></rect><rect x="19" y="6" width="1" height="1"></rect><rect x="20" y="6" width="1" height="1"></rect><rect x="9" y="7" width="1" height="1"></rect><rect x="10" y="7" width="1" height="1"></rect><rect x="0" y="8" width="1" height="1"></rect><rect x="3" y="8" width="1" height="1"></rect><rect x="5" y="8" width="1" height="1"></rect><rect x="6" y="8" width="1" height="1"></rect><rect x="9" y="8" width="1" height="1"></rect><rect x="11" y="8" width="1" height="1"></rect><rect x="15" y="8" width="1" height="1"></rect><rect x="17" y="8" width="1" height="1"></rect><rect x="18" y="8" width="1" height="1"></rect><rect x="19" y="8" width="1" height="1"></rect><rect x="20" y="8" width="1" height="1"></rect><rect x="0" y="9" width="1" height="1"></rect><rect x="2" y="9" width="1" height="1"></rect><rect x="7" y="9" width="1" height="1"></rect><rect x="9" y="9" width="1" height="1"></rect><rect x="11" y="9" width="1" height="1"></rect><rect x="12" y="9" width="1" height="1"></rect><rect x="13" y="9" width="1" height="1"></rect><rect x="14" y="9" width="1" height="1"></rect><rect x="16" y="9" width="1" height="1"></rect><rect x="17" y="9" width="1" height="1"></rect><rect x="19" y="9" width="1" height="1"></rect><rect x="20" y="9" width="1" height="1"></rect><rect x="3" y="10" width="1" height="1"></rect><rect x="5" y="10" width="1" height="1"></rect><rect x="6" y="10" width="1" height="1"></rect><rect x="7" y="10" width="1" height="1"></rect><rect x="8" y="10" width="1" height="1"></rect><rect x="9" y="10" width="1" height="1"></rect><rect x="10" y="10" width="1" height="1"></rect><rect x="11" y="10" width="1" height="1"></rect><rect x="13" y="10" width="1" height="1"></rect><rect x="15" y="10" width="1" height="1"></rect><rect x="17" y="10" width="1" height="1"></rect><rect x="18" y="10" width="1" height="1"></rect><rect x="2" y="11" width="1" height="1"></rect><rect x="3" y="11" width="1" height="1"></rect><rect x="4" y="11" width="1" height="1"></rect><rect x="5" y="11" width="1" height="1"></rect><rect x="10" y="11" width="1" height="1"></rect><rect x="11" y="11" width="1" height="1"></rect><rect x="12" y="11" width="1" height="1"></rect><rect x="13" y="11" width="1" height="1"></rect><rect x="18" y="11" width="1" height="1"></rect><rect x="1" y="12" width="1" height="1"></rect><rect x="2" y="12" width="1" height="1"></rect><rect x="4" y="12" width="1" height="1"></rect><rect x="5" y="12" width="1" height="1"></rect><rect x="6" y="12" width="1" height="1"></rect><rect x="7" y="12" width="1" height="1"></rect><rect x="8" y="12" width="1" height="1"></rect><rect x="9" y="12" width="1" height="1"></rect><rect x="15" y="12" width="1" height="1"></rect><rect x="17" y="12" width="1" height="1"></rect><rect x="8" y="13" width="1" height="1"></rect><rect x="9" y="13" width="1" height="1"></rect><rect x="10" y="13" width="1" height="1"></rect><rect x="11" y="13" width="1" height="1"></rect><rect x="12" y="13" width="1" height="1"></rect><rect x="14" y="13" width="1" height="1"></rect><rect x="16" y="13" width="1" height="1"></rect><rect x="20" y="13" width="1" height="1"></rect><rect x="0" y="14" width="1" height="1"></rect><rect x="1" y="14" width="1" height="1"></rect><rect x="2" y="14" width="1" height="1"></rect><rect x="3" y="14" width="1" height="1"></rect><rect x="4" y="14" width="1" height="1"></rect><rect x="5" y="14" width="1" height="1"></rect><rect x="6" y="14" width="1" height="1"></rect><rect x="10" y="14" width="1" height="1"></rect><rect x="11" y="14" width="1" height="1"></rect><rect x="13" y="14" width="1" height="1"></rect><rect x="14" y="14" width="1" height="1"></rect><rect x="15" y="14" width="1" height="1"></rect><rect x="16" y="14" width="1" height="1"></rect><rect x="17" y="14" width="1" height="1"></rect><rect x="19" y="14" width="1" height="1"></rect><rect x="20" y="14" width="1" height="1"></rect><rect x="0" y="15" width="1" height="1"></rect><rect x="6" y="15" width="1" height="1"></rect><rect x="9" y="15" width="1" height="1"></rect><rect x="12" y="15" width="1" height="1"></rect><rect x="15" y="15" width="1" height="1"></rect><rect x="16" y="15" width="1" height="1"></rect><rect x="17" y="15" width="1" height="1"></rect><rect x="18" y="15" width="1" height="1"></rect><rect x="19" y="15" width="1" height="1"></rect><rect x="0" y="16" width="1" height="1"></rect><rect x="2" y="16" width="1" height="1"></rect><rect x="3" y="16" width="1" height="1"></rect><rect x="4" y="16" width="1" height="1"></rect><rect x="6" y="16" width="1" height="1"></rect><rect x="8" y="16" width="1" height="1"></rect><rect x="9" y="16" width="1" height="1"></rect><rect x="13" y="16" width="1" height="1"></rect><rect x="15" y="16" width="1" height="1"></rect><rect x="19" y="16" width="1" height="1"></rect><rect x="20" y="16" width="1" height="1"></rect><rect x="0" y="17" width="1" height="1"></rect><rect x="2" y="17" width="1" height="1"></rect><rect x="3" y="17" width="1" height="1"></rect><rect x="4" y="17" width="1" height="1"></rect><rect x="6" y="17" width="1" height="1"></rect><rect x="8" y="17" width="1" height="1"></rect><rect x="10" y="17" width="1" height="1"></rect><rect x="12" y="17" width="1" height="1"></rect><rect x="13" y="17" width="1" height="1"></rect><rect x="14" y="17" width="1" height="1"></rect><rect x="15" y="17" width="1" height="1"></rect><rect x="16" y="17" width="1" height="1"></rect><rect x="18" y="17" width="1" height="1"></rect><rect x="0" y="18" width="1" height="1"></rect><rect x="2" y="18" width="1" height="1"></rect><rect x="3" y="18" width="1" height="1"></rect><rect x="4" y="18" width="1" height="1"></rect><rect x="6" y="18" width="1" height="1"></rect><rect x="10" y="18" width="1" height="1"></rect><rect x="16" y="18" width="1" height="1"></rect><rect x="17" y="18" width="1" height="1"></rect><rect x="18" y="18" width="1" height="1"></rect><rect x="19" y="18" width="1" height="1"></rect><rect x="0" y="19" width="1" height="1"></rect><rect x="6" y="19" width="1" height="1"></rect><rect x="8" y="19" width="1" height="1"></rect><rect x="12" y="19" width="1" height="1"></rect><rect x="16" y="19" width="1" height="1"></rect><rect x="18" y="19" width="1" height="1"></rect><rect x="0" y="20" width="1" height="1"></rect><rect x="1" y="20" width="1" height="1"></rect><rect x="2" y="20" width="1" height="1"></rect><rect x="3" y="20" width="1" height="1"></rect><rect x="4" y="20" width="1" height="1"></rect><rect x="5" y="20" width="1" height="1"></rect><rect x="6" y="20" width="1" height="1"></rect><rect x="8" y="20" width="1" height="1"></rect><rect x="13" y="20" width="1" height="1"></rect><rect x="14" y="20" width="1" height="1"></rect><rect x="18" y="20" width="1" height="1"></rect></g></svg></div>
+          <div style="color:#2f9e6a;font-size:22px;">→</div>
+          <div style="flex:1;background:#fff;border-radius:14px;padding:13px;box-shadow:0 10px 26px rgba(0,0,0,.07);">
+            <div style="display:flex;align-items:center;gap:9px;"><span style="width:30px;height:30px;border-radius:9px;background:linear-gradient(140deg,#d9ffe6,#c9f0d3);display:flex;align-items:center;justify-content:center;">✦</span><span style="font-size:12.5px;font-weight:700;">Lead received</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:26px;">
+      <a href="#" style="background:#fff;color:#10101a;padding:14px 26px;border-radius:14px;font-weight:600;font-size:16px;display:inline-flex;align-items:center;gap:9px;">Start with step 1 — it's free
+        <span style="width:22px;height:22px;border-radius:50%;background:#141420;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — COMPARISON -->
+  <section style="margin-top:34px;">
+    <div class="reveal" style="text-align:center;max-width:40ch;margin:0 auto 28px;">
+      <span style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#7d7d8e;">The difference</span>
+      <h2 style="font-size:clamp(28px,5vw,44px);line-height:1.05;font-weight:800;letter-spacing:-.03em;color:#fff;margin:12px 0 0;">Paper. Digital. Conversational.</h2>
+    </div>
+    <div class="r-cmp-wrap reveal" style="border-radius:26px;background:linear-gradient(140deg,#e7efff,#efeaff);padding:14px;color:#141420;">
+      <div class="r-cmp">
+        <!-- header row -->
+        <div style="padding:20px 22px;"></div>
+        <div style="padding:20px 16px;text-align:center;font-weight:700;font-size:15px;color:#6a6a7a;">Paper card</div>
+        <div style="padding:20px 16px;text-align:center;font-weight:700;font-size:15px;color:#6a6a7a;">Static digital card</div>
+        <div style="padding:16px;text-align:center;background:#141420;color:#fff;border-radius:18px 18px 0 0;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;"><img src="assets/logo-white.svg" alt="Connectia" style="height:15px;width:auto;"></div>
+
+        <!-- row 1 -->
+        <div style="padding:22px;font-weight:700;font-size:15.5px;border-top:1px solid rgba(20,20,32,.08);">Answers their questions</div>
+        <div style="padding:22px 16px;text-align:center;font-size:20px;border-top:1px solid rgba(20,20,32,.08);color:#c25a5a;">✕</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13px;color:#8a8a98;border-top:1px solid rgba(20,20,32,.08);">It just sits there</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13.5px;font-weight:700;background:#141420;color:#7fffb0;">✓ AI answers 24/7</div>
+
+        <!-- row 2 -->
+        <div style="padding:22px;font-weight:700;font-size:15.5px;border-top:1px solid rgba(20,20,32,.08);">Captures who's interested</div>
+        <div style="padding:22px 16px;text-align:center;font-size:20px;border-top:1px solid rgba(20,20,32,.08);color:#c25a5a;">✕</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13px;color:#8a8a98;border-top:1px solid rgba(20,20,32,.08);">One-way</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13.5px;font-weight:700;background:#141420;color:#7fffb0;">✓ Leads with context</div>
+
+        <!-- row 3 -->
+        <div style="padding:22px;font-weight:700;font-size:15.5px;border-top:1px solid rgba(20,20,32,.08);">Works after the handshake</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13px;color:#8a8a98;border-top:1px solid rgba(20,20,32,.08);">Tossed in a week</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13px;color:#8a8a98;border-top:1px solid rgba(20,20,32,.08);">Saved &amp; forgotten</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13.5px;font-weight:700;background:#141420;color:#7fffb0;">✓ Still selling at 11 PM</div>
+
+        <!-- row 4 -->
+        <div style="padding:22px;font-weight:700;font-size:15.5px;border-top:1px solid rgba(20,20,32,.08);">Hardware required</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13px;color:#8a8a98;border-top:1px solid rgba(20,20,32,.08);">Printing</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13px;color:#8a8a98;border-top:1px solid rgba(20,20,32,.08);">Often NFC cards</div>
+        <div style="padding:22px 16px;text-align:center;font-size:13.5px;font-weight:700;background:#141420;color:#7fffb0;border-radius:0 0 18px 18px;">✓ Just a link &amp; QR</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 — PRICING -->
+  <section id="pricing" style="margin-top:34px;">
+    <div class="reveal" style="text-align:center;max-width:40ch;margin:0 auto 28px;">
+      <span style="font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#7d7d8e;">Pricing</span>
+      <h2 style="font-size:clamp(28px,5vw,44px);line-height:1.05;font-weight:800;letter-spacing:-.03em;color:#fff;margin:12px 0 0;">Start free. Upgrade when it pays for itself.</h2>
+    </div>
+    <div class="r-price stack reveal-group" style="display:grid;gap:14px;align-items:start;">
+      <div style="position:relative;border-radius:22px;background:linear-gradient(140deg,#eef1f6,#f6f8fc);padding:26px 22px;display:flex;flex-direction:column;">
+        
+        <div style="font-size:18px;font-weight:800;color:#141420;">Starter</div>
+        <div style="font-size:12.5px;color:#7c7c8a;margin-top:4px;min-height:34px;">For your very first avatar</div>
+        <div style="margin:16px 0 4px;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;"><span style="font-size:32px;font-weight:800;letter-spacing:-.02em;color:#141420;">Free</span></div>
+        <div style="font-size:12px;color:#7c7c8a;">No credit card</div>
+        <a href="#" style="margin:20px 0;display:block;text-align:center;background:transparent;color:#141420;border:1px solid rgba(20,20,32,.16);padding:12px;border-radius:12px;font-weight:600;font-size:14px;">Start free</a>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;"><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> AI avatar chats · 50/mo</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Training data 200MB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Video upload 500MB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Basic profile</li></ul>
+      </div>
+      <div style="position:relative;border-radius:22px;background:linear-gradient(140deg,#eef1f6,#f6f8fc);padding:26px 22px;display:flex;flex-direction:column;">
+        
+        <div style="font-size:18px;font-weight:800;color:#141420;">Basic</div>
+        <div style="font-size:12.5px;color:#7c7c8a;margin-top:4px;min-height:34px;">Get serious about your avatar</div>
+        <div style="margin:16px 0 4px;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;"><span style="font-size: 26px; font-weight: 800; letter-spacing: -.02em; text-decoration-line: none; text-decoration-color: rgba(20,20,32,.3); color: #141420">$4.99</span><span style="font-size:13px;font-weight:600;color:#7c7c8a;">/mo</span></div>
+        <div style="font-size:12px;color:#7c7c8a;">Cancel anytime</div>
+        <a href="#" style="margin:20px 0;display:block;text-align:center;background:transparent;color:#141420;border:1px solid rgba(20,20,32,.16);padding:12px;border-radius:12px;font-weight:600;font-size:14px;">Start Basic</a>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;"><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> AI avatar chats · 100/mo</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Training data 1GB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Video upload 5GB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Chat top-ups supported</li></ul>
+      </div>
+      <div style="position:relative;border-radius:22px;background:linear-gradient(140deg,#141420,#22223a);padding:26px 22px;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.45);">
+        <div style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:#6c5ff2;color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:5px 13px;border-radius:999px;white-space:nowrap;">MOST POPULAR</div>
+        <div style="font-size:18px;font-weight:800;color:#fff;">Standard</div>
+        <div style="font-size:12.5px;color:#a8a8bc;margin-top:4px;min-height:34px;">For growing creators &amp; pros</div>
+        <div style="margin:16px 0 4px;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;"><span style="font-size: 26px; font-weight: 800; letter-spacing: -.02em; text-decoration-line: none; text-decoration-color: rgba(255,255,255,.4); color: #fff">$8.99</span><span style="font-size:13px;font-weight:600;color:#a8a8bc;">/mo</span></div>
+        <div style="font-size:12px;color:#a8a8bc;">Cancel anytime</div>
+        <a href="#" style="margin:20px 0;display:block;text-align:center;background:#6c5ff2;color:#fff;padding:12px;border-radius:12px;font-weight:600;font-size:14px;">Start Standard</a>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;"><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#c8c8d6;"><span style="color:#a99cff;font-weight:800;flex:none;">✓</span> AI avatar chats · 200/mo</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#c8c8d6;"><span style="color:#a99cff;font-weight:800;flex:none;">✓</span> Training data 2GB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#c8c8d6;"><span style="color:#a99cff;font-weight:800;flex:none;">✓</span> Video upload 10GB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#c8c8d6;"><span style="color:#a99cff;font-weight:800;flex:none;">✓</span> Remove Connectia branding</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#c8c8d6;"><span style="color:#a99cff;font-weight:800;flex:none;">✓</span> Chat analytics report</li></ul>
+      </div>
+      <div style="position:relative;border-radius:22px;background:linear-gradient(140deg,#eef1f6,#f6f8fc);padding:26px 22px;display:flex;flex-direction:column;">
+        
+        <div style="font-size:18px;font-weight:800;color:#141420;">Premium</div>
+        <div style="font-size:12.5px;color:#7c7c8a;margin-top:4px;min-height:34px;">Complete your personal brand</div>
+        <div style="margin:16px 0 4px;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;"><span style="font-size: 26px; font-weight: 800; letter-spacing: -.02em; text-decoration-line: none; text-decoration-color: rgba(20,20,32,.3); color: #141420">$18.99</span><span style="font-size:13px;font-weight:600;color:#7c7c8a;">/mo</span></div>
+        <div style="font-size:12px;color:#7c7c8a;">Cancel anytime</div>
+        <a href="#" style="margin:20px 0;display:block;text-align:center;background:transparent;color:#141420;border:1px solid rgba(20,20,32,.16);padding:12px;border-radius:12px;font-weight:600;font-size:14px;">Start Premium</a>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;"><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> AI avatar chats · 300/mo</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Training data 5GB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Video upload 30GB</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Custom domain connection</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Priority support</li></ul>
+      </div>
+      <div style="position:relative;border-radius:22px;background:linear-gradient(140deg,#eef1f6,#f6f8fc);padding:26px 22px;display:flex;flex-direction:column;">
+        
+        <div style="font-size:18px;font-weight:800;color:#141420;">Enterprise</div>
+        <div style="font-size:12.5px;color:#7c7c8a;margin-top:4px;min-height:34px;">For teams &amp; organizations</div>
+        <div style="margin:16px 0 4px;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;"><span style="font-size:32px;font-weight:800;letter-spacing:-.02em;color:#141420;">Custom</span></div>
+        <div style="font-size:12px;color:#7c7c8a;">Tailored to your scale</div>
+        <a href="#" style="margin:20px 0;display:block;text-align:center;background:transparent;color:#141420;border:1px solid rgba(20,20,32,.16);padding:12px;border-radius:12px;font-weight:600;font-size:14px;">Contact us</a>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;"><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Unlimited chats, data &amp; video</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Custom domain &amp; multi-avatar</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Dedicated account manager</li><li style="display:flex;gap:9px;font-size:12.5px;font-weight:500;line-height:1.35;color:#43435a;"><span style="color:#6c5ff2;font-weight:800;flex:none;">✓</span> Security · SLA · contract support</li></ul>
+      </div>
+    </div>
+
+    <!-- top-up banner -->
+    <div style="margin-top:16px;border-radius:20px;background:#131318;border:1px solid rgba(255,255,255,.07);padding:18px 24px;display:flex;align-items:center;gap:14px;">
+      <span style="width:38px;height:38px;flex:none;border-radius:11px;background:#6c5ff2;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:18px;">⚡</span>
+      <span style="font-size:14.5px;color:#b8b8c6;line-height:1.45;">Used up your monthly allowance? Top up AI chats anytime at <b style="color: #f0f0f6; text-decoration-line: none; text-decoration-color: rgba(255,255,255,.4)">$0.04</b> each — top-up credits never expire until you use them.</span>
+    </div>
+
+    <!-- FAQ -->
+    <div style="margin-top:44px;max-width:760px;margin-left:auto;margin-right:auto;">
+      <h3 style="text-align:center;font-size:30px;font-weight:800;letter-spacing:-.02em;color:#fff;margin:0 0 22px;">Questions, answered.</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ faqs }}" as="item" hint-placeholder-count="4">
+          <div style="border-radius:18px;background:#131318;border:1px solid rgba(255,255,255,.07);overflow:hidden;">
+            <div onClick="{{ item.toggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;">
+              <span style="font-size:16.5px;font-weight:700;color:#f0f0f6;">{{ item.q }}</span>
+              <span style="width:26px;height:26px;flex:none;border-radius:8px;background:rgba(255,255,255,.08);color:#c8c8d4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s;transform:{{ item.chev }};">⌄</span>
+            </div>
+            <sc-if value="{{ item.open }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 22px 22px;font-size:15px;line-height:1.55;color:#a4a4b2;">{{ item.a }}</div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section style="margin-top:34px;">
+    <div style="border-radius:28px;background:#0f0f14;padding:64px 44px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(90% 120% at 50% -10%,rgba(120,150,255,.22),transparent 60%);"></div>
+      <div class="reveal" style="position:relative;">
+        <h2 style="font-size:clamp(30px,6vw,52px);line-height:1.02;font-weight:800;letter-spacing:-.03em;color:#fff;margin:0;max-width:18ch;margin-left:auto;margin-right:auto;">Stop handing out cards that can't talk.</h2>
+        <p style="font-size:19px;color:#a8a8bc;margin:22px auto 0;max-width:46ch;line-height:1.5;">Someone's about to scan your card and have a question. Make sure it gets answered.</p>
+        <a href="#" style="margin-top:30px;display:inline-flex;align-items:center;gap:10px;background:#fff;color:#10101a;padding:16px 30px;border-radius:15px;font-weight:700;font-size:17px;">Create your free card
+          <span style="width:24px;height:24px;border-radius:50%;background:#141420;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;">→</span>
+        </a>
+        <p style="font-size:13.5px;color:#7a7a8c;margin:20px 0 0;font-weight:500;">Free forever · Nothing for them to install · Ready in 2 minutes</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="display:flex;align-items:center;justify-content:space-between;padding:24px 6px 8px;border-top:1px solid rgba(255,255,255,.06);margin-top:6px;">
+    <div style="display:flex;align-items:center;">
+      <img src="assets/logo-white.svg" alt="Connectia" style="height:18px;width:auto;display:block;opacity:.9;">
+    </div>
+    <span style="font-size:13px;color:#6a6a7a;">The business card that answers back. © 2026</span>
+  </footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200},&quot;proPrice&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;$9&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;},&quot;leadToastOn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;faqDefaultOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+class Component extends DCLogic {
+  state = { openFaq: 0 };
+  componentDidMount() { this.__setupMotion(); }
+  componentDidUpdate() { if (this.__update) this.__update(); }
+  componentWillUnmount() {
+    if (this.__onScroll) window.removeEventListener("scroll", this.__onScroll);
+    if (this.__onResize) window.removeEventListener("resize", this.__onResize);
+  }
+  __fitMock() {
+    var panel = document.querySelector(".hero-panel");
+    var scaler = document.querySelector(".mock-scaler");
+    var canvas = document.querySelector(".mock-canvas");
+    if (!panel || !scaler || !canvas) return;
+    if (!window.matchMedia("(max-width: 620px)").matches) {
+      canvas.style.transform = ""; scaler.style.height = ""; return;
+    }
+    var f = Math.min(1, (panel.clientWidth - 28) / 400);
+    canvas.style.transform = "scale(" + f.toFixed(4) + ")";
+    scaler.style.height = (600 * f).toFixed(1) + "px";
+  }
+  __updateStacks() {
+    var stacks = document.querySelectorAll(".stack");
+    var on = window.matchMedia("(max-width: 620px)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    for (var s = 0; s < stacks.length; s++) {
+      var cards = stacks[s].children;
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        if (!on) { card.style.transform = ""; card.style.filter = ""; continue; }
+        var next = cards[i + 1];
+        var p = 0;
+        if (next) {
+          var c = card.getBoundingClientRect();
+          var n = next.getBoundingClientRect();
+          var h = c.height || 1;
+          p = (c.bottom - n.top) / h;
+          p = p < 0 ? 0 : p > 1 ? 1 : p;
+        }
+        card.style.transform = "scale(" + (1 - p * 0.1).toFixed(4) + ") translateY(" + (-6 * p).toFixed(1) + "px)";
+        card.style.filter = "brightness(" + (1 - p * 0.22).toFixed(3) + ")";
+      }
+    }
+  }
+  __setupMotion() {
+    if (typeof window === "undefined" || this.__onScroll) return;
+    var self = this;
+    this.__update = function () { self.__updateStacks(); self.__fitMock(); };
+    var ticking = false;
+    this.__onScroll = function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { self.__updateStacks(); ticking = false; });
+    };
+    this.__onResize = function () { self.__fitMock(); self.__updateStacks(); };
+    window.addEventListener("scroll", this.__onScroll, { passive: true });
+    window.addEventListener("resize", this.__onResize, { passive: true });
+    this.__fitMock();
+    self.__updateStacks();
+  }
+  renderVals() {
+    const faqData = [
+      { q: "Does the other person need an app?", a: "No. Your card opens in any browser — scan, browse, chat. Nothing to install." },
+      { q: "Do I need an NFC card or hardware?", a: "No. Your card lives at a link with a QR code. No chips, no compatibility issues." },
+      { q: "What does the AI learn from?", a: "One source you give it (intro deck or website), plus everything on your card itself. It only answers from what you've provided — and if it doesn't know, it forwards the question and their contact to you instead of guessing." },
+      { q: "Where do my leads go?", a: "Straight to your dashboard and email: name, contact, and what they asked about." }
+    ];
+    const open = this.props.faqDefaultOpen === false ? -1 : this.state.openFaq;
+    const faqs = faqData.map((f, i) => ({
+      q: f.q,
+      a: f.a,
+      open: i === open,
+      chev: i === open ? "rotate(180deg)" : "rotate(0deg)",
+      toggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i }))
+    }));
+    return {
+      faqs,
+      proPrice: this.props.proPrice ?? "$9",
+      leadToastOn: this.props.leadToastOn ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

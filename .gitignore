@@ -1,0 +1,6 @@
+.DS_Store
+.claude/
+.thumbnail
+.image-slots.state.json
+.vercel/
+node_modules/
