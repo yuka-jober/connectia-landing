@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
+<title>Connectia — The business card that answers back</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
@@ -89,8 +85,8 @@
     }
   }
 </style>
-<script src="./image-slot.js"></script>
-</helmet>
+</head>
+<body>
 
 <div style="background:#08080a;font-family:'Archivo',system-ui,sans-serif;color:#e9e9ef;min-height:100vh;padding:clamp(12px,3vw,20px);">
 <div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:20px;">
@@ -142,23 +138,20 @@
           </div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
             <div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
-              <image-slot id="mock-g1" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(6).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(6).png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;">
             </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
-              <image-slot id="mock-g2" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_52%20(8).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_52%20(8).png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;">
             </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
-              <image-slot id="mock-g3" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_50%20(5).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_50%20(5).png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;">
             </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
-              <image-slot id="mock-g4" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(7).png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(7).png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;">
             </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
-              <image-slot id="mock-g5" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_53_17%20(2)-1b1f26bc.png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_53_17%20(2)-1b1f26bc.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;">
             </div><div style="position:relative;width:100%;padding-top:100%;background:#e9eaf1;border-radius:6px;overflow:hidden;">
-              <image-slot id="mock-g6" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_53_17%20(2)-1b1f26bc.png" shape="rounded" radius="6" fit="cover" placeholder="" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_53_17%20(2)-1b1f26bc.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;">
             </div>
           </div>
         </div></div>
-      <sc-if value="{{ leadToastOn }}" hint-placeholder-val="{{ true }}">
-      
-      </sc-if>
 
       
     <div style="position:relative;z-index:2;width:100%;max-width:400px;height:560px;margin:0 auto;">
@@ -172,14 +165,14 @@
           <div style="display:flex;flex-direction:column;gap:9px;">
             <div>
               <div style="position:relative;width:100%;height:70px;border-radius:9px;overflow:hidden;background:#e9eaf1;">
-                <image-slot id="mock-vid1" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(6).png" shape="rect" fit="cover" placeholder="Video" style="width:100%;height:100%;"></image-slot>
+                <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(6).png" alt="Video" style="width:100%;height:100%;object-fit:cover;">
                 <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;padding-left:2px;pointer-events:none;">▶</span>
               </div>
               <div style="font-size:9.5px;font-weight:600;color:#43435a;margin-top:5px;line-height:1.25;">How I close enterprise deals</div>
             </div>
             <div>
               <div style="position:relative;width:100%;height:70px;border-radius:9px;overflow:hidden;background:#e9eaf1;">
-                <image-slot id="mock-vid2" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_52%20(8).png" shape="rect" fit="cover" placeholder="Video" style="width:100%;height:100%;"></image-slot>
+                <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_52%20(8).png" alt="Video" style="width:100%;height:100%;object-fit:cover;">
                 <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;padding-left:2px;pointer-events:none;">▶</span>
               </div>
               <div style="font-size:9.5px;font-weight:600;color:#43435a;margin-top:5px;line-height:1.25;">Studio walk-through tour</div>
@@ -211,13 +204,13 @@
           <!-- profile -->
           <div style="border-radius:20px;background:#fff;overflow:hidden;">
             <div style="position:relative;height:64px;background:linear-gradient(140deg,#c3b8ff,#9db6ff);">
-              <image-slot id="mock-cover" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(7).png" shape="rect" fit="cover" placeholder="Cover photo" style="width:100%;height:100%;"></image-slot>
+              <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_51%20(7).png" alt="Cover photo" style="width:100%;height:100%;object-fit:cover;">
             </div>
             <div style="padding:0 15px 15px;">
               
               <div style="display:flex;align-items:flex-end;justify-content:space-between;">
                 <div style="width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid #fff;margin-top:-27px;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.15);background:#e9eaf1;">
-                  <image-slot id="mock-avatar" src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_50%20(5).png" shape="circle" fit="cover" placeholder="Photo" style="width:100%;height:100%;"></image-slot>
+                  <img src="uploads/ChatGPT%20Image%202026%E1%84%82%E1%85%A7%E1%86%AB%207%E1%84%8B%E1%85%AF%E1%86%AF%2015%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011_45_50%20(5).png" alt="Photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                 </div>
                 <div style="display:flex;gap:5px;margin-bottom:2px;">
                   <span style="font-size:10px;font-weight:600;color:#3f3f52;background:#eef0f5;padding:6px 9px;border-radius:999px;">Save</span>
@@ -466,18 +459,35 @@
     <!-- FAQ -->
     <div style="margin-top:44px;max-width:760px;margin-left:auto;margin-right:auto;">
       <h3 style="text-align:center;font-size:30px;font-weight:800;letter-spacing:-.02em;color:#fff;margin:0 0 22px;">Questions, answered.</h3>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <sc-for list="{{ faqs }}" as="item" hint-placeholder-count="4">
-          <div style="border-radius:18px;background:#131318;border:1px solid rgba(255,255,255,.07);overflow:hidden;">
-            <div onClick="{{ item.toggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;">
-              <span style="font-size:16.5px;font-weight:700;color:#f0f0f6;">{{ item.q }}</span>
-              <span style="width:26px;height:26px;flex:none;border-radius:8px;background:rgba(255,255,255,.08);color:#c8c8d4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s;transform:{{ item.chev }};">⌄</span>
-            </div>
-            <sc-if value="{{ item.open }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:0 22px 22px;font-size:15px;line-height:1.55;color:#a4a4b2;">{{ item.a }}</div>
-            </sc-if>
+      <div class="faq-list" style="display:flex;flex-direction:column;gap:12px;">
+        <div class="faq-item faq-open" style="border-radius:18px;background:#131318;border:1px solid rgba(255,255,255,.07);overflow:hidden;">
+          <div class="faq-head" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;">
+            <span style="font-size:16.5px;font-weight:700;color:#f0f0f6;">Does the other person need an app?</span>
+            <span class="faq-chev" style="width:26px;height:26px;flex:none;border-radius:8px;background:rgba(255,255,255,.08);color:#c8c8d4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s;transform:rotate(180deg);">⌄</span>
           </div>
-        </sc-for>
+          <div class="faq-body" style="padding:0 22px 22px;font-size:15px;line-height:1.55;color:#a4a4b2;">No. Your card opens in any browser — scan, browse, chat. Nothing to install.</div>
+        </div>
+        <div class="faq-item" style="border-radius:18px;background:#131318;border:1px solid rgba(255,255,255,.07);overflow:hidden;">
+          <div class="faq-head" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;">
+            <span style="font-size:16.5px;font-weight:700;color:#f0f0f6;">Do I need an NFC card or hardware?</span>
+            <span class="faq-chev" style="width:26px;height:26px;flex:none;border-radius:8px;background:rgba(255,255,255,.08);color:#c8c8d4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s;transform:rotate(0deg);">⌄</span>
+          </div>
+          <div class="faq-body" style="display:none;padding:0 22px 22px;font-size:15px;line-height:1.55;color:#a4a4b2;">No. Your card lives at a link with a QR code. No chips, no compatibility issues.</div>
+        </div>
+        <div class="faq-item" style="border-radius:18px;background:#131318;border:1px solid rgba(255,255,255,.07);overflow:hidden;">
+          <div class="faq-head" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;">
+            <span style="font-size:16.5px;font-weight:700;color:#f0f0f6;">What does the AI learn from?</span>
+            <span class="faq-chev" style="width:26px;height:26px;flex:none;border-radius:8px;background:rgba(255,255,255,.08);color:#c8c8d4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s;transform:rotate(0deg);">⌄</span>
+          </div>
+          <div class="faq-body" style="display:none;padding:0 22px 22px;font-size:15px;line-height:1.55;color:#a4a4b2;">One source you give it (intro deck or website), plus everything on your card itself. It only answers from what you've provided — and if it doesn't know, it forwards the question and their contact to you instead of guessing.</div>
+        </div>
+        <div class="faq-item" style="border-radius:18px;background:#131318;border:1px solid rgba(255,255,255,.07);overflow:hidden;">
+          <div class="faq-head" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;cursor:pointer;">
+            <span style="font-size:16.5px;font-weight:700;color:#f0f0f6;">Where do my leads go?</span>
+            <span class="faq-chev" style="width:26px;height:26px;flex:none;border-radius:8px;background:rgba(255,255,255,.08);color:#c8c8d4;display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s;transform:rotate(0deg);">⌄</span>
+          </div>
+          <div class="faq-body" style="display:none;padding:0 22px 22px;font-size:15px;line-height:1.55;color:#a4a4b2;">Straight to your dashboard and email: name, contact, and what they asked about.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -507,31 +517,28 @@
 
 </div>
 </div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200},&quot;proPrice&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;$9&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;},&quot;leadToastOn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;faqDefaultOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
-class Component extends DCLogic {
-  state = { openFaq: 0 };
-  componentDidMount() { this.__setupMotion(); }
-  componentDidUpdate() { if (this.__update) this.__update(); }
-  componentWillUnmount() {
-    if (this.__onScroll) window.removeEventListener("scroll", this.__onScroll);
-    if (this.__onResize) window.removeEventListener("resize", this.__onResize);
-  }
-  __fitMock() {
+
+<script>
+(function () {
+  function fitMock() {
     var panel = document.querySelector(".hero-panel");
     var scaler = document.querySelector(".mock-scaler");
     var canvas = document.querySelector(".mock-canvas");
     if (!panel || !scaler || !canvas) return;
     if (!window.matchMedia("(max-width: 620px)").matches) {
-      canvas.style.transform = ""; scaler.style.height = ""; return;
+      canvas.style.transform = "";
+      scaler.style.height = "";
+      return;
     }
     var f = Math.min(1, (panel.clientWidth - 28) / 400);
     canvas.style.transform = "scale(" + f.toFixed(4) + ")";
     scaler.style.height = (600 * f).toFixed(1) + "px";
   }
-  __updateStacks() {
+
+  function updateStacks() {
     var stacks = document.querySelectorAll(".stack");
-    var on = window.matchMedia("(max-width: 620px)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var on = window.matchMedia("(max-width: 620px)").matches
+      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     for (var s = 0; s < stacks.length; s++) {
       var cards = stacks[s].children;
       for (var i = 0; i < cards.length; i++) {
@@ -551,44 +558,40 @@ class Component extends DCLogic {
       }
     }
   }
-  __setupMotion() {
-    if (typeof window === "undefined" || this.__onScroll) return;
-    var self = this;
-    this.__update = function () { self.__updateStacks(); self.__fitMock(); };
-    var ticking = false;
-    this.__onScroll = function () {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () { self.__updateStacks(); ticking = false; });
-    };
-    this.__onResize = function () { self.__fitMock(); self.__updateStacks(); };
-    window.addEventListener("scroll", this.__onScroll, { passive: true });
-    window.addEventListener("resize", this.__onResize, { passive: true });
-    this.__fitMock();
-    self.__updateStacks();
-  }
-  renderVals() {
-    const faqData = [
-      { q: "Does the other person need an app?", a: "No. Your card opens in any browser — scan, browse, chat. Nothing to install." },
-      { q: "Do I need an NFC card or hardware?", a: "No. Your card lives at a link with a QR code. No chips, no compatibility issues." },
-      { q: "What does the AI learn from?", a: "One source you give it (intro deck or website), plus everything on your card itself. It only answers from what you've provided — and if it doesn't know, it forwards the question and their contact to you instead of guessing." },
-      { q: "Where do my leads go?", a: "Straight to your dashboard and email: name, contact, and what they asked about." }
-    ];
-    const open = this.props.faqDefaultOpen === false ? -1 : this.state.openFaq;
-    const faqs = faqData.map((f, i) => ({
-      q: f.q,
-      a: f.a,
-      open: i === open,
-      chev: i === open ? "rotate(180deg)" : "rotate(0deg)",
-      toggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i }))
-    }));
-    return {
-      faqs,
-      proPrice: this.props.proPrice ?? "$9",
-      leadToastOn: this.props.leadToastOn ?? true
-    };
-  }
-}
+
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { updateStacks(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener("resize", function () { fitMock(); updateStacks(); }, { passive: true });
+
+  fitMock();
+  updateStacks();
+
+  document.querySelectorAll(".faq-item").forEach(function (item) {
+    var head = item.querySelector(".faq-head");
+    if (!head) return;
+    head.addEventListener("click", function () {
+      var wasOpen = item.classList.contains("faq-open");
+      document.querySelectorAll(".faq-item").forEach(function (other) {
+        other.classList.remove("faq-open");
+        var body = other.querySelector(".faq-body");
+        var chev = other.querySelector(".faq-chev");
+        if (body) body.style.display = "none";
+        if (chev) chev.style.transform = "rotate(0deg)";
+      });
+      if (!wasOpen) {
+        item.classList.add("faq-open");
+        var body = item.querySelector(".faq-body");
+        var chev = item.querySelector(".faq-chev");
+        if (body) body.style.display = "";
+        if (chev) chev.style.transform = "rotate(180deg)";
+      }
+    });
+  });
+})();
 </script>
 </body>
 </html>
