@@ -4,3 +4,4 @@
 .image-slots.state.json
 .vercel/
 node_modules/
+.vercel
